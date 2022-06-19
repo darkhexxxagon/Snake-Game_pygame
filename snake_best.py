@@ -1,6 +1,5 @@
 import pygame
 import random
-from pygame.locals import *
 from pygame import mixer
 # Initialization
 pygame.init()  # necessary to initialize the pygame library
@@ -38,13 +37,20 @@ pause = False
 running = True
 clock = pygame.time.Clock()
 
+# def color():
+#     r = random.randint(0,255)
+#     g = random.randint(0,255)
+#     b = random.randint(0,255)
+#     rgb = [r,g,b]
+#     return rgb
+
 def paused():
     if game_over==0: #fix the overlay into the gameover screen and pause
         mixer.music.pause()
         loop = 1
         screen.fill(pause_bg)
         text = font.render('Game in pause, press esc to continue', False, red)    
-        screen.blit(text, (screen_width/2, screen_height / 2))
+        screen.blit(text, (320, screen_height / 2))
         while loop:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -53,10 +59,8 @@ def paused():
                     if event.key == pygame.K_ESCAPE:
                         loop = 0
                         mixer.music.unpause()
-                    if event.key == pygame.K_SPACE:
-                        loop = 0
                     if event.key==pygame.K_q:
-                        running=False
+                        running=False        #bug
             pygame.display.update()
             # screen.fill((0, 0, 0))
             clock.tick(60)
@@ -80,6 +84,8 @@ pygame.mixer.init()
 play_background_music()
 # While "running" is true (always true unless user quits):
 while running:
+    #random colors for food
+    
     # If the user hasn't lost the game:
     if not game_over:
         screen.fill(bgcol)
@@ -102,10 +108,10 @@ while running:
 
         # Draw a snake block for each point the user has
         for block in snake_blocks:
-            pygame.draw.rect(screen, snake_color, [block[0], block[1], snake_size, snake_size])
+            pygame.draw.rect(screen, snake_color, [block[0], block[1], snake_size, snake_size])#the last part defines the area to draw
         pygame.draw.rect(screen, food_color, [fruit_x, fruit_y, snake_size, snake_size])
 
-        # Update the speed of the snake
+        # Update the speed vector of the snake
         snake_x += speed_x
         snake_y += speed_y
 
@@ -134,9 +140,9 @@ while running:
         screen.fill(black)
         screen.blit(game_over_surface, game_over_rect)
         score = font.render('You scored ' + str(snake_length), False, red)
-        screen.blit(score, (384, screen_height / 2 +100))
+        screen.blit(score, (320, screen_height / 2 +100))
         text = font.render('You lost! Press \'Q\' to quit, or Spacebar to play again', False, red)
-        screen.blit(text, (384, screen_height / 2 +200))
+        screen.blit(text, (320, screen_height / 2 +200))
     # Update the screen
     pygame.display.flip()
     clock.tick(snake_speed)
