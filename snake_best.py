@@ -40,10 +40,11 @@ clock = pygame.time.Clock()
 
 def paused():
     if game_over==0: #fix the overlay into the gameover screen and pause
+        mixer.music.pause()
         loop = 1
         screen.fill(pause_bg)
         text = font.render('Game in pause, press esc to continue', False, red)    
-        screen.blit(text, (360, screen_height / 2 +200))
+        screen.blit(text, (screen_width/2, screen_height / 2))
         while loop:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -51,6 +52,7 @@ def paused():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         loop = 0
+                        mixer.music.unpause()
                     if event.key == pygame.K_SPACE:
                         loop = 0
                     if event.key==pygame.K_q:
@@ -63,6 +65,7 @@ def play_background_music():
         mixer.init()
         mixer.music.load('resources/music.mp3')
         mixer.music.play()
+        
 def show_score(choice, color, font, size):
     score_font = pygame.font.SysFont(font, size)
     score_surface = score_font.render('Score : ' + str(snake_length), True, color)
@@ -123,6 +126,7 @@ while running:
 
     # Game over logic (screen showing users score + how to continue)
     else:
+        mixer.music.stop()
         my_font = pygame.font.SysFont('times new roman', 90)
         game_over_surface = my_font.render('YOU DIED', True, red)
         game_over_rect = game_over_surface.get_rect()
@@ -153,6 +157,7 @@ while running:
                 snake_y = screen_height / 2
                 snake_blocks = []
                 snake_length = 1
+                mixer.music.play()
             # Movement (up, down, left, right arrow keys)
             if event.key == pygame.K_UP:
                 speed_x = 0
@@ -170,7 +175,6 @@ while running:
             if event.key == pygame.K_ESCAPE:
                     pause = True
                     paused()
-            
         # If the event is "QUIT" (when user clicks X on window)
         if event.type == pygame.QUIT:
             # Set running to False, stop event loop
