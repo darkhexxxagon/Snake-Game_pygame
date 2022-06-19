@@ -1,5 +1,7 @@
 import pygame
 import random
+from pygame.locals import *
+from pygame import mixer
 # Initialization
 pygame.init()  # necessary to initialize the pygame library
 font = pygame.font.SysFont('Arial', 40)
@@ -57,7 +59,10 @@ def paused():
             # screen.fill((0, 0, 0))
             clock.tick(60)
 
-
+def play_background_music():
+        mixer.init()
+        mixer.music.load('resources/music.mp3')
+        mixer.music.play()
 def show_score(choice, color, font, size):
     score_font = pygame.font.SysFont(font, size)
     score_surface = score_font.render('Score : ' + str(snake_length), True, color)
@@ -68,7 +73,8 @@ def show_score(choice, color, font, size):
         score_rect.midtop = (screen_width/2, screen_height/1.25)
     screen.blit(score_surface, score_rect)
     # pygame.display.flip()
-
+pygame.mixer.init()
+play_background_music()
 # While "running" is true (always true unless user quits):
 while running:
     # If the user hasn't lost the game:
@@ -80,7 +86,7 @@ while running:
         snake_head.append(snake_x)
         snake_head.append(snake_y)
         snake_blocks.append(snake_head)
-
+        
         # Ensure the snake is only as big as the length we've set
         if len(snake_blocks) > snake_length:
             del snake_blocks[0]
