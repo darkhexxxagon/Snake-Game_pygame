@@ -19,7 +19,7 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 # Set the snake in the middle of the screen
 snake_x = screen_width / 2
 snake_y = screen_height / 2
-snake_speed = 5
+snake_speed = 15
 snake_size = 10
 snake_length = 4
 snake_blocks = []
@@ -152,7 +152,7 @@ while running:
         screen.blit(text, (320, screen_height / 2 +200))
     # Update the screen
     pygame.display.flip()
-    clock.tick(60)
+    clock.tick(snake_speed)#it does not use 60fps because it can alterate the speed of the snake, in consequence it can't be playable
 
     # Event Loop
     # Get the next events from the queue

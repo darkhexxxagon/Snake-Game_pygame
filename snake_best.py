@@ -1,9 +1,10 @@
-import pygame#tkinter, turtle
+import pygame
 import random
-from pygame import mixer#pygame.mixer.music
+from pygame import mixer
 # Initialization
 pygame.init()  # necessary to initialize the pygame library
 font = pygame.font.SysFont('Arial', 40)
+
 # Colours
 blue = (0, 0, 255)  # hex code for blue
 black = (0, 0, 0)  # hex code for black
@@ -13,10 +14,8 @@ food_color = (242,183,5)
 white = (255, 255, 255)
 bgcol=(38,38,38)
 pause_bg = (21,21,21)
-
 screen_width = 1280
 screen_height = 720
-
 screen = pygame.display.set_mode((screen_width, screen_height))
 
 # Set the snake in the middle of the screen
@@ -24,7 +23,7 @@ snake_x = screen_width / 2
 snake_y = screen_height / 2
 snake_speed = 15
 snake_size = 10
-snake_length = 1
+snake_length = 4
 snake_blocks = []
 
 fruit_x = 300
@@ -50,7 +49,7 @@ def paused():
         mixer.music.pause()
         loop = 1
         screen.fill(pause_bg)
-        text = font.render('Game in pause, press esc to continue', True, red)    
+        text = font.render('Game in pause, press esc to continue', False, red)    
         screen.blit(text, (320, screen_height / 2))
         while loop:
             for event in pygame.event.get():
@@ -81,11 +80,12 @@ def show_score(choice, color, font, size):
         score_rect.midtop = (screen_width/2, screen_height/1.25)
     screen.blit(score_surface, score_rect)
     # pygame.display.flip()
-
 pygame.mixer.init()
 play_background_music()
 # While "running" is true (always true unless user quits):
-while running:    
+while running:
+    #random colors for food
+    
     # If the user hasn't lost the game:
     if not game_over:
         screen.fill(bgcol)
@@ -128,7 +128,6 @@ while running:
                 snake_y >= screen_height or snake_y < 0):
             # Set game over to true
             game_over = True
-
         show_score(1, white, 'consolas', 20)
 
     # Game over logic (screen showing users score + how to continue)
@@ -140,10 +139,9 @@ while running:
         game_over_rect.midtop = (screen_width/2, screen_height/4)
         screen.fill(black)
         screen.blit(game_over_surface, game_over_rect)
-        
-        score = font.render('You scored ' + str(snake_length), True, red)
+        score = font.render('You scored ' + str(snake_length), False, red)
         screen.blit(score, (320, screen_height / 2 +100))
-        text = font.render('You lost! Press \'Q\' to quit, or Spacebar to play again', True, red)
+        text = font.render('You lost! Press \'Q\' to quit, or Spacebar to play again', False, red)
         screen.blit(text, (320, screen_height / 2 +200))
     # Update the screen
     pygame.display.flip()
