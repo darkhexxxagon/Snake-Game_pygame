@@ -1,8 +1,6 @@
-import pygame
-import sys
-import time
-import random
-speed = 15
+import pygame, sys, time, random
+from pygame import mixer
+speed = 10
 # windows sizes
 frame_size_x = 1380
 frame_size_y = 840
@@ -16,6 +14,7 @@ else:
 # initialise game window
 pygame.display.set_caption("Snake Game")
 game_window = pygame.display.set_mode((frame_size_x, frame_size_y))
+
 # colors
 snake_color = (242, 242, 242)
 food_color = (242, 183, 5)
@@ -23,7 +22,6 @@ white = (255, 255, 255)
 bgcol = (38, 38, 38)
 pause_bg = (21, 21, 21)
 black = pygame.Color(0, 0, 0)
-white = pygame.Color(255, 255, 255)
 red = pygame.Color(255, 0, 0)
 green = pygame.Color(0, 255, 0)
 blue = pygame.Color(0, 0, 255)
@@ -31,10 +29,15 @@ blue = pygame.Color(0, 0, 255)
 font = pygame.font.SysFont('Arial', 40)
 
 fps_controller = pygame.time.Clock()
+
 # one snake square size
 square_size = 30
 score = 0
 
+def play_background_music():
+    mixer.init()
+    mixer.music.load('resources/music.mp3')
+    mixer.music.play(-1)
 
 def init_vars():
     global head_pos, snake_body, food_pos, food_spawn, direction, running, gameover
@@ -46,11 +49,11 @@ def init_vars():
     food_pos = [random.randrange(1, (frame_size_x // square_size)) * square_size,
                 random.randrange(1, (frame_size_y // square_size)) * square_size]
     food_spawn = True
-
+    
 
 def paused():
     if gameover == 0:  # fix the overlay into the gameover screen and pause
-        # mixer.music.pause()
+        mixer.music.pause()
         loop = 1
         game_window.fill(pause_bg)
         text = font.render('Game in pause, press esc to continue', True, red)
@@ -62,7 +65,7 @@ def paused():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         loop = 0
-                        # mixer.music.unpause()
+                        mixer.music.unpause()
                     if event.key == pygame.K_q:
                         pygame.quit()
                         sys.exit()
@@ -88,10 +91,10 @@ def show_score(choice, color, font, size):
         score_rect.midtop = (frame_size_x/2, frame_size_y/1.25)
         
     game_window.blit(score_surface, score_rect)
+play_background_music()
 
 # game loop
 while running:
-    
     if not gameover:
         if direction == "UP":
             head_pos[1] -= square_size
@@ -126,11 +129,11 @@ while running:
             food_spawn = True
 
         # food and snake screen draw
-        game_window.fill(black)
+        game_window.fill(bgcol)
         for pos in snake_body:
-            pygame.draw.rect(game_window, green, pygame.Rect(
+            pygame.draw.rect(game_window, snake_color, pygame.Rect(
                 pos[0] + 2, pos[1] + 2, square_size - 2, square_size - 2))
-        pygame.draw.rect(game_window, red, pygame.Rect(
+        pygame.draw.rect(game_window, food_color, pygame.Rect(
             food_pos[0], food_pos[1], square_size, square_size))
 
         # game over condiditons
@@ -167,7 +170,9 @@ while running:
                         and direction != "LEFT"):
                     direction = "RIGHT"
                 if (event.key == pygame.K_ESCAPE):
+                    mixer.music.pause()
                     paused()
+                    
                 if event.key == pygame.K_SPACE:
                     init_vars()
                 if event.key == pygame.K_q:

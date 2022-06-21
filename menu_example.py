@@ -4,8 +4,8 @@ import pygame
 import sys
 import time
 import random
-
 pygame.init()
+
 check_errors = pygame.init()
 if(check_errors[1] > 0):
     print("Error " + check_errors[1])
@@ -19,34 +19,22 @@ fps_controller = pygame.time.Clock()
 pygame.display.set_caption('game base')
 game_window = pygame.display.set_mode((frame_size_x, frame_size_y), 0, 32)
 
-#colors
+    #colors
 snake_color = (242, 242, 242)
 food_color = (242, 183, 5)
 white = (255, 255, 255)
 bgcol = (38, 38, 38)
 pause_bg = (21, 21, 21)
 black = pygame.Color(0, 0, 0)
-white = pygame.Color(255, 255, 255)
 red = pygame.Color(255, 0, 0)
 green = pygame.Color(0, 255, 0)
 blue = pygame.Color(0, 0, 255)
-
 font = pygame.font.SysFont('Arial', 20)
-
 #util variables
 square_size = 30
 score = 0
 speed=15
-gameover=False
-def init_vars():
-    global head_pos, snake_body, food_pos, food_spawn, direction, running
-    running = True
-    direction = "RIGHT"
-    head_pos = [120, 60]
-    snake_body = [[120, 60]]
-    food_pos = [random.randrange(1, (frame_size_x // square_size)) * square_size,
-                random.randrange(1, (frame_size_y // square_size)) * square_size]
-    food_spawn = True
+
 def draw_text(text, font, color, surface, x, y):
     textobj = font.render(text, 1, color)
     textrect = textobj.get_rect()
@@ -90,7 +78,6 @@ def show_score(choice, color, font, size):
         
     game_window.blit(score_surface, score_rect)
 
-
 click = False
 
 def main_menu():
@@ -128,12 +115,18 @@ def main_menu():
         pygame.display.update()
         fps_controller.tick(60)
 
-
 def game():
+    global head_pos, snake_body, food_pos, food_spawn, direction, running, gameover
     running = True
+    gameover=False
+    direction = "RIGHT"
+    head_pos = [120, 60]
+    snake_body = [[120, 60]]
+    food_pos = [random.randrange(1, (frame_size_x // square_size)) * square_size,
+                random.randrange(1, (frame_size_y // square_size)) * square_size]
+    food_spawn = True
     while running:
         game_window.fill((0, 0, 0))
-
         draw_text('game', font, (255, 255, 255), game_window, 20, 20)
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -142,7 +135,6 @@ def game():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     running = False
-        init_vars()
         if not gameover:
             if direction == "UP":
                 head_pos[1] -= square_size
@@ -239,6 +231,5 @@ def options():
 
         pygame.display.update()
         fps_controller.tick(60)
-
 
 main_menu()

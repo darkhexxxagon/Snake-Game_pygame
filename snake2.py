@@ -1,7 +1,5 @@
-import pygame
-import sys
-import time
-import random
+import pygame, sys,time, random
+from pygame import mixer
 speed = 15
 # windows sizes
 frame_size_x = 1380
@@ -35,6 +33,10 @@ fps_controller = pygame.time.Clock()
 square_size = 30
 score = 0
 
+def play_background_music():
+    mixer.init()
+    mixer.music.load('resources/music.mp3')
+    mixer.music.play()
 
 def init_vars():
     global head_pos, snake_body, food_pos, food_spawn, direction, running, gameover
@@ -62,7 +64,7 @@ def paused():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         loop = 0
-                        # mixer.music.unpause()
+                        mixer.music.unpause()
                     if event.key == pygame.K_q:
                         pygame.quit()
                         sys.exit()
@@ -139,6 +141,7 @@ while running:
                 gameover = True
         show_score(1, white, 'consolas', 20)
     else:
+        mixer.music.stop()
         show_score(0,red,'Arial', 40)
         text = font.render('You lost! Press \'Q\' to quit, or Spacebar to play again', True, red)
         game_window.blit(text, (320, frame_size_y / 2 + 200))
@@ -167,6 +170,7 @@ while running:
                         and direction != "LEFT"):
                     direction = "RIGHT"
                 if (event.key == pygame.K_ESCAPE):
+                    mixer.music.pause()
                     paused()
                 if event.key == pygame.K_SPACE:
                     init_vars()
