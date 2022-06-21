@@ -122,8 +122,7 @@ while running:
         for block in snake_blocks:
             pygame.draw.rect(screen, snake_color, pygame.Rect(
                 block[0]+2, block[1]+2, snake_size-2, snake_size-2))  # the last part defines the area to draw
-        pygame.draw.rect(screen, food_color, [
-                         fruit_x, fruit_y, snake_size, snake_size])
+        pygame.draw.rect(screen, food_color, [fruit_x, fruit_y, snake_size, snake_size])
 
         # Update the speed vector of the snake
         snake_x += speed_x
