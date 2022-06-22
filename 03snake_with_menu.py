@@ -1,8 +1,5 @@
-import pygame
-import sys
-import time
-import random
-from pygame import mixer
+import pygame, sys, time, random
+from pygame import Surface, mixer
 speed = 10
 # windows sizes
 frame_size_x = 1380
@@ -37,6 +34,7 @@ font_pause = pygame.font.Font("font.ttf", 70)
 resume_text = font_pause.render("resume", False, 'black')
 exit_text = font_pause.render("exit", False, 'black')
 
+bg=pygame.image.load("100.jpg")
 fps_controller = pygame.time.Clock()
 
 # one snake square size
@@ -181,7 +179,7 @@ while running:
             food_spawn = True
 
         # food and snake screen draw
-        game_window.fill(bgcol)
+        game_window.blit(bg,(0,0))
         for pos in snake_body:
             pygame.draw.rect(game_window, snake_color, pygame.Rect(
                 pos[0] + 2, pos[1] + 2, square_size - 2, square_size - 2))

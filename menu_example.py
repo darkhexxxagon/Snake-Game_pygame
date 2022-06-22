@@ -19,7 +19,7 @@ fps_controller = pygame.time.Clock()
 pygame.display.set_caption('game base')
 game_window = pygame.display.set_mode((frame_size_x, frame_size_y), 0, 32)
 
-    #colors
+#colors
 snake_color = (242, 242, 242)
 food_color = (242, 183, 5)
 white = (255, 255, 255)
@@ -33,7 +33,7 @@ font = pygame.font.SysFont('Arial', 20)
 #util variables
 square_size = 30
 score = 0
-speed=15
+speed=5
 
 def draw_text(text, font, color, surface, x, y):
     textobj = font.render(text, 1, color)
