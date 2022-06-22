@@ -87,15 +87,15 @@ def init_vars():
 
 def paused():
     loop = 1
+    # Transparent White Layer
+    white = pygame.transform.scale(white_image, (frame_size_x, frame_size_y))
+    white.set_colorkey('black')
+    white.set_alpha(100)
+    game_window.blit(white, (0, 0))
+    
     while loop:
         if gameover == 0:  # fix the overlay into the gameover screen and pause
             mixer.music.pause()
-            paused=False
-            # Transparent White Layer
-            white = pygame.transform.scale(white_image, (frame_size_x, frame_size_y))
-            white.set_colorkey('black')
-            white.set_alpha(100)
-            game_window.blit(white, (0, 0))
             clicked = False
             mouse_pos = pygame.mouse.get_pos()
             # Resume Button
@@ -131,7 +131,6 @@ def paused():
                     sys.exit()
             if pygame.mouse.get_pressed()[0] == 0:
                 clicked = False
-                
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         loop = 0
