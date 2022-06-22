@@ -12,7 +12,6 @@ else:
     print("Game Succesfully initialized")
 
 # initialise game window
-pygame.display.set_caption("Snake Game")
 game_window = pygame.display.set_mode((frame_size_x, frame_size_y))
 
 # colors
@@ -32,7 +31,10 @@ black_image = pygame.image.load('black.png')
 # Text
 font_pause = pygame.font.Font("font.ttf", 70)
 resume_text = font_pause.render("resume", False, 'black')
+resume_alt_text = font_pause.render("resume", False, 'orange')
 exit_text = font_pause.render("exit", False, 'black')
+exit_alt_text = font_pause.render("exit", False, 'red')
+
 
 bg=pygame.image.load("100.jpg")
 fps_controller = pygame.time.Clock()
@@ -105,11 +107,14 @@ def paused():
             resume_rect = pygame.Rect(frame_size_x-resume_text.get_width()-5, 5,resume_text.get_width(), resume_text.get_height())
             game_window.blit(resume_text, (resume_rect.x, resume_rect.y))
             if resume_rect.collidepoint(mouse_pos):
+                #changing the color of the text
+                resume_rect = pygame.Rect(frame_size_x-resume_alt_text.get_width()-5, 5,resume_alt_text.get_width(), resume_alt_text.get_height())
+                game_window.blit(resume_alt_text, (resume_rect.x, resume_rect.y))
                 # Resume Button Outline
-                black = pygame.transform.scale(black_image,(resume_text.get_width(), resume_text.get_height()))
-                black.set_colorkey('black')
-                black.set_alpha(100)
-                game_window.blit(black, (resume_rect.x, resume_rect.y))
+                # black = pygame.transform.scale(black_image,(resume_text.get_width(), resume_text.get_height()))
+                # black.set_colorkey('black')
+                # black.set_alpha(100)
+                # game_window.blit(black, (resume_rect.x, resume_rect.y))
                 # Resume Button Clicking Function
                 if pygame.mouse.get_pressed()[0] == 1 and clicked == False:
                     loop =0
@@ -122,11 +127,13 @@ def paused():
             game_window.blit(exit_text, (exit_rect.x, exit_rect.y))
             # Exit Button Clicking Function
             if exit_rect.collidepoint(mouse_pos):
+                exit_rect = pygame.Rect(frame_size_x-exit_alt_text.get_width()-5,resume_text.get_height()+10,exit_alt_text.get_width(), exit_alt_text.get_height())
+                game_window.blit(exit_alt_text, (exit_rect.x, exit_rect.y))
                 # Exit Button Outline
-                black = pygame.transform.scale(black_image,(exit_text.get_width(), exit_text.get_height()))
-                black.set_colorkey('black')
-                black.set_alpha(100)
-                game_window.blit(black, (exit_rect.x, exit_rect.y))
+                # black = pygame.transform.scale(black_image,(exit_text.get_width(), exit_text.get_height()))
+                # black.set_colorkey('black')
+                # black.set_alpha(100)
+                # game_window.blit(black, (exit_rect.x, exit_rect.y))
                 # Exit Button Clicking Funciton
                 if pygame.mouse.get_pressed()[0] == 1 and clicked == False:
                     clicked = True
@@ -134,16 +141,16 @@ def paused():
                     sys.exit()
             if pygame.mouse.get_pressed()[0] == 0:
                 clicked = False
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    loop = 0
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
                         loop = 0
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:
-                            loop = 0
-                            mixer.music.unpause()
+                        mixer.music.unpause()
                             
-                pygame.display.update()
-                fps_controller.tick(60)
+            pygame.display.update()
+            fps_controller.tick(60)
 
 init_vars()
 
