@@ -43,12 +43,35 @@ fps_controller = pygame.time.Clock()
 square_size = 30
 score = 0
 
+#a function that draw the score in the game window
+def show_score(choice, color, font, size):
+    score_font = pygame.font.Font('Pcoleco.otf', 40)
+    score_surface = score_font.render("Score: " + str(score), True, color)
+    score_rect = score_surface.get_rect()
+    if choice == 1:
+        score_rect.midtop = (frame_size_x / 10, 15)
+    else:
+        gameover_font = pygame.font.Font('font.ttf', 90)
+        game_over_surface = gameover_font.render('YOU DIED', True, red)
+        game_over_rect = game_over_surface.get_rect()
+        game_over_rect.midtop = (frame_size_x/2, frame_size_y/4)
+        game_window.fill(black)
+        game_window.blit(game_over_surface, game_over_rect)
+        score_rect.midtop = (frame_size_x/2, frame_size_y/1.25)
+    game_window.blit(score_surface, score_rect)
 
 def play_background_music():
     mixer.init()
     mixer.music.load('resources/music.mp3')
     mixer.music.play(-1)
 
+def play_sound(sound):
+    point=mixer.Sound("resources/Point.wav")
+    crash=mixer.Sound("resources/crash.wav")
+    if sound == 0: 
+        mixer.Sound.play(crash)
+    if sound == 1:
+        mixer.Sound.play(point)
 
 def init_vars():
     global head_pos, snake_body, food_pos, food_spawn, direction, running, gameover
@@ -60,7 +83,7 @@ def init_vars():
     food_pos = [random.randrange(1, (frame_size_x // square_size)) * square_size,
                 random.randrange(1, (frame_size_y // square_size)) * square_size]
     food_spawn = True
-
+    play_background_music()
 
 def paused():
     loop = 1
@@ -75,7 +98,6 @@ def paused():
             game_window.blit(white, (0, 0))
             clicked = False
             mouse_pos = pygame.mouse.get_pos()
-            
             # Resume Button
             resume_rect = pygame.Rect(frame_size_x-resume_text.get_width()-5, 5,resume_text.get_width(), resume_text.get_height())
             game_window.blit(resume_text, (resume_rect.x, resume_rect.y))
@@ -121,28 +143,7 @@ def paused():
                 pygame.display.update()
                 fps_controller.tick(60)
 
-
 init_vars()
-
-def show_score(choice, color, font, size):
-    score_font = pygame.font.SysFont(font, size)
-    score_surface = score_font.render("Score: " + str(score), True, color)
-    score_rect = score_surface.get_rect()
-    if choice == 1:
-        score_rect.midtop = (frame_size_x / 10, 15)
-    else:
-        my_font = pygame.font.SysFont('times new roman', 90)
-        game_over_surface = my_font.render('YOU DIED', True, red)
-        game_over_rect = game_over_surface.get_rect()
-        game_over_rect.midtop = (frame_size_x/2, frame_size_y/4)
-        game_window.fill(black)
-        game_window.blit(game_over_surface, game_over_rect)
-        score_rect.midtop = (frame_size_x/2, frame_size_y/1.25)
-
-    game_window.blit(score_surface, score_rect)
-
-
-play_background_music()
 
 # game loop
 while running:
@@ -170,6 +171,7 @@ while running:
         if head_pos[0] == food_pos[0] and head_pos[1] == food_pos[1]:
             score += 1
             food_spawn = False
+            play_sound(1)      
         else:
             snake_body.pop()
 
@@ -191,12 +193,12 @@ while running:
         for block in snake_body[1:]:
             if head_pos[0] == block[0] and head_pos[1] == block[1]:
                 gameover = True
+                play_sound(0)
                 mixer.music.stop()
-        show_score(1, white, 'consolas', 20)
+        show_score(1, white, 'consolas', 30)
     else:
         show_score(0, red, 'Arial', 40)
-        option_surface = font.render(
-            'You lost! Press \'Q\' to quit, or Spacebar to play again', True, food_color)
+        option_surface = font.render('You lost! Press \'Q\' to quit, or Spacebar to play again', True, snake_color)
         option_rect = option_surface.get_rect()
         option_rect.midtop = (frame_size_x/2, frame_size_y/2+200)
         game_window.blit(option_surface, option_rect)
@@ -227,8 +229,8 @@ while running:
             if (event.key == pygame.K_ESCAPE):
                 mixer.music.pause()
                 paused()
-
-            if event.key == pygame.K_SPACE:
-                init_vars()
-            if event.key == pygame.K_q:
-                running = False
+            if gameover==True:
+                if event.key == pygame.K_SPACE:
+                    init_vars()
+                if event.key == pygame.K_q:
+                    running = False
