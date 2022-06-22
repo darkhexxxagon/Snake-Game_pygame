@@ -1,4 +1,7 @@
-import pygame, sys, time, random
+import pygame
+import sys
+import time
+import random
 from pygame import mixer
 speed = 10
 # windows sizes
@@ -27,6 +30,12 @@ green = pygame.Color(0, 255, 0)
 blue = pygame.Color(0, 0, 255)
 
 font = pygame.font.SysFont('Arial', 40)
+white_image = pygame.image.load("white.png")
+black_image = pygame.image.load('black.png')
+# Text
+font_pause = pygame.font.Font("font.ttf", 70)
+resume_text = font_pause.render("resume", False, 'black')
+exit_text = font_pause.render("exit", False, 'black')
 
 fps_controller = pygame.time.Clock()
 
@@ -34,10 +43,12 @@ fps_controller = pygame.time.Clock()
 square_size = 30
 score = 0
 
+
 def play_background_music():
     mixer.init()
     mixer.music.load('resources/music.mp3')
     mixer.music.play(-1)
+
 
 def init_vars():
     global head_pos, snake_body, food_pos, food_spawn, direction, running, gameover
@@ -49,29 +60,67 @@ def init_vars():
     food_pos = [random.randrange(1, (frame_size_x // square_size)) * square_size,
                 random.randrange(1, (frame_size_y // square_size)) * square_size]
     food_spawn = True
-    
+
 
 def paused():
-    if gameover == 0:  # fix the overlay into the gameover screen and pause
-        mixer.music.pause()
-        loop = 1
-        game_window.fill(pause_bg)
-        text = font.render('Game in pause, press esc to continue', True, red)
-        game_window.blit(text, (320, frame_size_y / 2))
-        while loop:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    loop = 0
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
+    loop = 1
+    while loop:
+        if gameover == 0:  # fix the overlay into the gameover screen and pause
+            mixer.music.pause()
+            paused=False
+            # Transparent White Layer
+            white = pygame.transform.scale(white_image, (frame_size_x, frame_size_y))
+            white.set_colorkey('black')
+            white.set_alpha(100)
+            game_window.blit(white, (0, 0))
+            clicked = False
+            mouse_pos = pygame.mouse.get_pos()
+            
+            # Resume Button
+            resume_rect = pygame.Rect(frame_size_x-resume_text.get_width()-5, 5,resume_text.get_width(), resume_text.get_height())
+            game_window.blit(resume_text, (resume_rect.x, resume_rect.y))
+            if resume_rect.collidepoint(mouse_pos):
+                # Resume Button Outline
+                black = pygame.transform.scale(black_image,(resume_text.get_width(), resume_text.get_height()))
+                black.set_colorkey('black')
+                black.set_alpha(100)
+                game_window.blit(black, (resume_rect.x, resume_rect.y))
+                # Resume Button Clicking Function
+                if pygame.mouse.get_pressed()[0] == 1 and clicked == False:
+                    loop =0
+                    clicked = True
+                    mixer.music.unpause()
+            if pygame.mouse.get_pressed()[0] == 0:
+                clicked = False
+            # Exit Button
+            exit_rect = pygame.Rect(frame_size_x-exit_text.get_width()-5,resume_text.get_height()+10,exit_text.get_width(), exit_text.get_height())
+            game_window.blit(exit_text, (exit_rect.x, exit_rect.y))
+            # Exit Button Clicking Function
+            if exit_rect.collidepoint(mouse_pos):
+                # Exit Button Outline
+                black = pygame.transform.scale(black_image,(exit_text.get_width(), exit_text.get_height()))
+                black.set_colorkey('black')
+                black.set_alpha(100)
+                game_window.blit(black, (exit_rect.x, exit_rect.y))
+                # Exit Button Clicking Funciton
+                if pygame.mouse.get_pressed()[0] == 1 and clicked == False:
+                    clicked = True
+                    pygame.quit()
+                    sys.exit()
+            if pygame.mouse.get_pressed()[0] == 0:
+                clicked = False
+                
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
                         loop = 0
-                        mixer.music.unpause()
-                    if event.key == pygame.K_q:
-                        pygame.quit()
-                        sys.exit()
-            pygame.display.update()
-            # screen.fill((0, 0, 0))
-            fps_controller.tick(60)
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            loop = 0
+                            mixer.music.unpause()
+                            
+                pygame.display.update()
+                fps_controller.tick(60)
+
 
 init_vars()
 
@@ -89,8 +138,10 @@ def show_score(choice, color, font, size):
         game_window.fill(black)
         game_window.blit(game_over_surface, game_over_rect)
         score_rect.midtop = (frame_size_x/2, frame_size_y/1.25)
-        
+
     game_window.blit(score_surface, score_rect)
+
+
 play_background_music()
 
 # game loop
@@ -140,42 +191,44 @@ while running:
         for block in snake_body[1:]:
             if head_pos[0] == block[0] and head_pos[1] == block[1]:
                 gameover = True
+                mixer.music.stop()
         show_score(1, white, 'consolas', 20)
     else:
-        show_score(0,red,'Arial', 40)
-        text = font.render('You lost! Press \'Q\' to quit, or Spacebar to play again', True, red)
-        game_window.blit(text, (320, frame_size_y / 2 + 200))
-        
+        show_score(0, red, 'Arial', 40)
+        option_surface = font.render(
+            'You lost! Press \'Q\' to quit, or Spacebar to play again', True, food_color)
+        option_rect = option_surface.get_rect()
+        option_rect.midtop = (frame_size_x/2, frame_size_y/2+200)
+        game_window.blit(option_surface, option_rect)
+
     pygame.display.update()
     fps_controller.tick(speed)
-    
+
     # Event Loop
     # Get the next events from the queue
     # For each event returned from get(),
     for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if (event.key == pygame.K_UP or event.key == ord("w")
-                        and direction != "DOWN"):
-                    direction = "UP"
-                if (event.key == pygame.K_DOWN or event.key == ord("s")
-                        and direction != "UP"):
-                    direction = "DOWN"
-                if (event.key == pygame.K_LEFT or event.key == ord("a")
-                        and direction != "RIGHT"):
-                    direction = "LEFT"
-                if (event.key == pygame.K_RIGHT or event.key == ord("d")
-                        and direction != "LEFT"):
-                    direction = "RIGHT"
-                if (event.key == pygame.K_ESCAPE):
-                    mixer.music.pause()
-                    paused()
-                    
-                if event.key == pygame.K_SPACE:
-                    init_vars()
-                if event.key == pygame.K_q:
-                    running = False
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        elif event.type == pygame.KEYDOWN:
+            if (event.key == pygame.K_UP or event.key == ord("w")
+                    and direction != "DOWN"):
+                direction = "UP"
+            if (event.key == pygame.K_DOWN or event.key == ord("s")
+                    and direction != "UP"):
+                direction = "DOWN"
+            if (event.key == pygame.K_LEFT or event.key == ord("a")
+                    and direction != "RIGHT"):
+                direction = "LEFT"
+            if (event.key == pygame.K_RIGHT or event.key == ord("d")
+                    and direction != "LEFT"):
+                direction = "RIGHT"
+            if (event.key == pygame.K_ESCAPE):
+                mixer.music.pause()
+                paused()
 
-
+            if event.key == pygame.K_SPACE:
+                init_vars()
+            if event.key == pygame.K_q:
+                running = False
