@@ -58,10 +58,15 @@ def show_score(choice, color, font, size):
         score_rect.midtop = (frame_size_x/2, frame_size_y/1.25)
     game_window.blit(score_surface, score_rect)
 
-def play_background_music():
-    mixer.init()
-    mixer.music.load('resources/music.mp3')
-    mixer.music.play(-1)
+def play_background_music(music):
+    if music==1:
+        mixer.init()
+        mixer.music.load('resources/music.mp3')
+        mixer.music.play(-1)
+    else:
+        mixer.init()
+        mixer.music.load("resources/gameover.wav")
+        mixer.music.play()
 
 def play_sound(sound):
     point=mixer.Sound("resources/Point.wav")
@@ -81,7 +86,7 @@ def init_vars():
     food_pos = [random.randrange(1, (frame_size_x // square_size)) * square_size,
                 random.randrange(1, (frame_size_y // square_size)) * square_size]
     food_spawn = True
-    play_background_music()
+    play_background_music(1)
 
 def paused():
     loop = 1
@@ -192,6 +197,7 @@ while running:
                 gameover = True
                 play_sound(0)
                 mixer.music.stop()
+                play_background_music(0)
         show_score(1, white, 'consolas', 30)
     else:
         show_score(0, red, 'Arial', 40)
