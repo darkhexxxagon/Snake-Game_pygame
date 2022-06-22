@@ -1,4 +1,7 @@
-import pygame, sys, time, random
+import pygame
+import sys
+import time
+import random
 from pygame import Surface, mixer
 speed = 10
 # windows sizes
@@ -20,10 +23,10 @@ food_color = (242, 183, 5)
 white = (255, 255, 255)
 bgcol = (38, 38, 38)
 pause_bg = (21, 21, 21)
-black = pygame.Color(0, 0, 0)
-red = pygame.Color(255, 0, 0)
-green = pygame.Color(0, 255, 0)
-blue = pygame.Color(0, 0, 255)
+black = (0, 0, 0)
+red = (255, 0, 0)
+green = (0, 255, 0)
+blue = (0, 0, 255)
 
 font = pygame.font.SysFont('Arial', 40)
 white_image = pygame.image.load("white.png")
@@ -36,14 +39,16 @@ exit_text = font_pause.render("exit", False, 'black')
 exit_alt_text = font_pause.render("exit", False, 'red')
 
 
-bg=pygame.image.load("100.jpg")
+bg = pygame.image.load("100.jpg")
 fps_controller = pygame.time.Clock()
 
 # one snake square size
 square_size = 30
 score = 0
 
-#a function that draw the score in the game window
+# a function that draw the score in the game window
+
+
 def show_score(choice, color, font, size):
     score_font = pygame.font.Font('Pcoleco.otf', 40)
     score_surface = score_font.render("Score: " + str(score), True, color)
@@ -60,8 +65,9 @@ def show_score(choice, color, font, size):
         score_rect.midtop = (frame_size_x/2, frame_size_y/1.25)
     game_window.blit(score_surface, score_rect)
 
+
 def play_background_music(music):
-    if music==1:
+    if music == 1:
         mixer.init()
         mixer.music.load('resources/music.mp3')
         mixer.music.play(-1)
@@ -70,13 +76,15 @@ def play_background_music(music):
         mixer.music.load("resources/gameover.wav")
         mixer.music.play()
 
+
 def play_sound(sound):
-    point=mixer.Sound("resources/Point.wav")
-    crash=mixer.Sound("resources/crash.wav")
-    if sound == 0: 
+    point = mixer.Sound("resources/Point.wav")
+    crash = mixer.Sound("resources/crash.wav")
+    if sound == 0:
         mixer.Sound.play(crash)
     if sound == 1:
         mixer.Sound.play(point)
+
 
 def init_vars():
     global head_pos, snake_body, food_pos, food_spawn, direction, running, gameover
@@ -90,6 +98,7 @@ def init_vars():
     food_spawn = True
     play_background_music(1)
 
+
 def paused():
     loop = 1
     # Transparent White Layer
@@ -97,19 +106,22 @@ def paused():
     white.set_colorkey('black')
     white.set_alpha(100)
     game_window.blit(white, (0, 0))
-    
+
     while loop:
         if gameover == 0:  # fix the overlay into the gameover screen and pause
             mixer.music.pause()
             clicked = False
             mouse_pos = pygame.mouse.get_pos()
             # Resume Button
-            resume_rect = pygame.Rect(frame_size_x-resume_text.get_width()-5, 5,resume_text.get_width(), resume_text.get_height())
+            resume_rect = pygame.Rect(
+                frame_size_x-resume_text.get_width()-5, 5, resume_text.get_width(), resume_text.get_height())
             game_window.blit(resume_text, (resume_rect.x, resume_rect.y))
             if resume_rect.collidepoint(mouse_pos):
-                #changing the color of the text
-                resume_rect = pygame.Rect(frame_size_x-resume_alt_text.get_width()-5, 5,resume_alt_text.get_width(), resume_alt_text.get_height())
-                game_window.blit(resume_alt_text, (resume_rect.x, resume_rect.y))
+                # changing the color of the text
+                resume_rect = pygame.Rect(frame_size_x-resume_alt_text.get_width(
+                )-5, 5, resume_alt_text.get_width(), resume_alt_text.get_height())
+                game_window.blit(
+                    resume_alt_text, (resume_rect.x, resume_rect.y))
                 # Resume Button Outline
                 # black = pygame.transform.scale(black_image,(resume_text.get_width(), resume_text.get_height()))
                 # black.set_colorkey('black')
@@ -117,17 +129,19 @@ def paused():
                 # game_window.blit(black, (resume_rect.x, resume_rect.y))
                 # Resume Button Clicking Function
                 if pygame.mouse.get_pressed()[0] == 1 and clicked == False:
-                    loop =0
+                    loop = 0
                     clicked = True
                     mixer.music.unpause()
             if pygame.mouse.get_pressed()[0] == 0:
                 clicked = False
             # Exit Button
-            exit_rect = pygame.Rect(frame_size_x-exit_text.get_width()-5,resume_text.get_height()+10,exit_text.get_width(), exit_text.get_height())
+            exit_rect = pygame.Rect(frame_size_x-exit_text.get_width(
+            )-5, resume_text.get_height()+10, exit_text.get_width(), exit_text.get_height())
             game_window.blit(exit_text, (exit_rect.x, exit_rect.y))
             # Exit Button Clicking Function
             if exit_rect.collidepoint(mouse_pos):
-                exit_rect = pygame.Rect(frame_size_x-exit_alt_text.get_width()-5,resume_text.get_height()+10,exit_alt_text.get_width(), exit_alt_text.get_height())
+                exit_rect = pygame.Rect(frame_size_x-exit_alt_text.get_width(
+                )-5, resume_text.get_height()+10, exit_alt_text.get_width(), exit_alt_text.get_height())
                 game_window.blit(exit_alt_text, (exit_rect.x, exit_rect.y))
                 # Exit Button Outline
                 # black = pygame.transform.scale(black_image,(exit_text.get_width(), exit_text.get_height()))
@@ -148,9 +162,10 @@ def paused():
                     if event.key == pygame.K_ESCAPE:
                         loop = 0
                         mixer.music.unpause()
-                            
+
             pygame.display.update()
             fps_controller.tick(60)
+
 
 init_vars()
 
@@ -180,7 +195,7 @@ while running:
         if head_pos[0] == food_pos[0] and head_pos[1] == food_pos[1]:
             score += 1
             food_spawn = False
-            play_sound(1)      
+            play_sound(1)
         else:
             snake_body.pop()
 
@@ -191,7 +206,7 @@ while running:
             food_spawn = True
 
         # food and snake screen draw
-        game_window.blit(bg,(0,0))
+        game_window.blit(bg, (0, 0))
         for pos in snake_body:
             pygame.draw.rect(game_window, snake_color, pygame.Rect(
                 pos[0] + 2, pos[1] + 2, square_size - 2, square_size - 2))
@@ -208,7 +223,8 @@ while running:
         show_score(1, white, 'consolas', 30)
     else:
         show_score(0, red, 'Arial', 40)
-        option_surface = font.render('You lost! Press \'Q\' to quit, or Spacebar to play again', True, snake_color)
+        option_surface = font.render(
+            'You lost! Press \'Q\' to quit, or Spacebar to play again', True, snake_color)
         option_rect = option_surface.get_rect()
         option_rect.midtop = (frame_size_x/2, frame_size_y/2+200)
         game_window.blit(option_surface, option_rect)
@@ -239,7 +255,7 @@ while running:
             if (event.key == pygame.K_ESCAPE):
                 mixer.music.pause()
                 paused()
-            if gameover==True:
+            if gameover == True:
                 if event.key == pygame.K_SPACE:
                     init_vars()
                 if event.key == pygame.K_q:
