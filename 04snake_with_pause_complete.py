@@ -38,6 +38,25 @@ exit_alt_text = font_pause.render("exit", False, 'red')
 #background image
 bg = pygame.image.load("100.jpg")
 
+#a playlist with the bg musics
+play_list=[]
+play_list.append("resources/01.mp3")
+play_list.append("resources/02.mp3")
+play_list.append("resources/03.mp3")
+play_list.append("resources/04.mp3")
+songnum=1
+
+#function to randomize the reproduction of music
+def play_toonz(play_list):
+    random.shuffle(play_list)
+    pygame.mixer.music.load(play_list[songnum])
+    pygame.mixer.music.play(10)
+
+    for num, song in enumerate(play_list):
+        if num == songnum:
+            continue
+        pygame.mixer.music.queue(song)
+
 # one snake square size
 square_size = 30
 score = 0
@@ -58,17 +77,6 @@ def show_score(choice, color, font, size):
         game_window.blit(game_over_surface, game_over_rect)
         score_rect.midtop = (frame_size_x/2, frame_size_y/1.25)
     game_window.blit(score_surface, score_rect)
-
-#funtion to reproduce a music that depends of the moment
-def play_background_music(music):
-    if music == 1:
-        mixer.init()
-        mixer.music.load('resources/music.mp3')
-        mixer.music.play(-1)
-    else:
-        mixer.init()
-        mixer.music.load("resources/gameover.wav")
-        mixer.music.play()
 
 #function that reproduces sound effects
 def play_sound(sound):
@@ -91,7 +99,7 @@ def init_vars():
                 random.randrange(1, (frame_size_y // square_size)) * square_size]
     food_spawn = True
     fps_controller = pygame.time.Clock()
-    play_background_music(1)
+    play_toonz(play_list)
 
 #define a interactive pause menu
 def paused():
@@ -201,7 +209,7 @@ while running:
                 gameover = True
                 play_sound(0)
                 mixer.music.stop()
-                play_background_music(0)
+                #play_background_music(0)
         show_score(1, white, 'consolas', 30)
     else:
         show_score(0, red, 'Arial', 40)
