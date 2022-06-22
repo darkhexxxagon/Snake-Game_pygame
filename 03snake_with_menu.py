@@ -25,8 +25,6 @@ bgcol = (38, 38, 38)
 pause_bg = (21, 21, 21)
 black = (0, 0, 0)
 red = (255, 0, 0)
-green = (0, 255, 0)
-blue = (0, 0, 255)
 
 font = pygame.font.SysFont('Arial', 40)
 white_image = pygame.image.load("white.png")
