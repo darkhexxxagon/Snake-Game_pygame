@@ -29,12 +29,14 @@ red = (255, 0, 0)
 font = pygame.font.SysFont('Arial', 40)
 white_image = pygame.image.load("white.png")
 black_image = pygame.image.load('black.png')
+
 # Text
 font_pause = pygame.font.Font("font.ttf", 70)
 resume_text = font_pause.render("resume", False, 'black')
 resume_alt_text = font_pause.render("resume", False, 'orange')
 exit_text = font_pause.render("exit", False, 'black')
 exit_alt_text = font_pause.render("exit", False, 'red')
+
 #background image
 bg = pygame.image.load("100.jpg")
 
@@ -73,7 +75,7 @@ def show_score(choice, color, font, size):
         game_over_surface = gameover_font.render('YOU DIED', True, red)
         game_over_rect = game_over_surface.get_rect()
         game_over_rect.midtop = (frame_size_x/2, frame_size_y/4)
-        game_window.fill(black)
+        game_window.fill(pause_bg)
         game_window.blit(game_over_surface, game_over_rect)
         score_rect.midtop = (frame_size_x/2, frame_size_y/1.25)
     game_window.blit(score_surface, score_rect)

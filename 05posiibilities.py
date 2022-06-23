@@ -39,6 +39,9 @@ retry_alt_text = font_pause.render("retry", False, 'green')
 exit_text = font_pause.render("exit", False, 'black')
 exit_alt_text = font_pause.render("exit", False, 'red')
 
+# one snake square size
+square_size = 30
+score = 0
 #background image
 bg = pygame.image.load("100.jpg")
 
@@ -48,20 +51,14 @@ play_list.append("resources/02.mp3")
 play_list.append("resources/03.mp3")
 play_list.append("resources/04.mp3")
 songnum=1
-
 def play_toonz(play_list):
     random.shuffle(play_list)
     pygame.mixer.music.load(play_list[songnum])
     pygame.mixer.music.play(10)
-
     for num, song in enumerate(play_list):
         if num == songnum:
             continue
         pygame.mixer.music.queue(song)
-
-# one snake square size
-square_size = 30
-score = 0
 
 # a function that draw the score in the game window
 def show_score(choice, color, font, size):
@@ -80,31 +77,6 @@ def show_score(choice, color, font, size):
         score_rect.midtop = (frame_size_x/2, frame_size_y/1.25)
     game_window.blit(score_surface, score_rect)
 
-#funtion to reproduce a music that depends of the moment
-# def play_background_music(music):
-#     if music == 1:
-#         a=random.randrange(1,4)
-#         if a==1:
-#             mixer.init()
-#             mixer.music.load('resources/01.mp3')
-#             mixer.music.play(1)
-#         if a==2:
-#             mixer.init()
-#             mixer.music.load('resources/02.mp3')
-#             mixer.music.play(1)
-#         if a==3:
-#             mixer.init()
-#             mixer.music.load('resources/03.mp3')
-#             mixer.music.play(1)
-#         if a==4:
-#             mixer.init()
-#             mixer.music.load('resources/04.mp3')
-#             mixer.music.play(1)
-#     else:
-#         mixer.init()
-#         mixer.music.load("resources/gameover.wav")
-#         mixer.music.play()
-
 #function that reproduces sound effects
 def play_sound(sound):
     point = mixer.Sound("resources/Point.wav")
@@ -116,8 +88,7 @@ def play_sound(sound):
 
 #function to initialize the variables
 def init_vars():
-    global head_pos, snake_body, food_pos, food_spawn, direction, running, gameover, fps_controller
-    running = True
+    global head_pos, snake_body, food_pos, food_spawn, fps_controller, direction, gameover
     gameover = False
     direction = "RIGHT"
     head_pos = [120, 60]
@@ -126,7 +97,6 @@ def init_vars():
                 random.randrange(1, (frame_size_y // square_size)) * square_size]
     food_spawn = True
     fps_controller = pygame.time.Clock()
-    play_toonz(play_list)
 
 #define a interactive pause menu
 def paused():
@@ -181,7 +151,129 @@ def paused():
                         mixer.music.unpause()
             pygame.display.update()
             fps_controller.tick(60)
+def text_objects(text, font):
+    textSurface = font.render(text, True, black)
+    return textSurface, textSurface.get_rect()
+def game_intro():
+    intro = True
+    while intro:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    intro = False
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+        #represent the title in the middle
+        game_window.fill(white)
+        intro_font = pygame.font.Font('font.ttf', 90)
+        intro_surface = intro_font.render('Snake Game', True, red)
+        intro_rect = intro_surface.get_rect()
+        intro_rect.midtop = (frame_size_x/2, frame_size_y/4)
+        game_window.blit(intro_surface, intro_rect)
+        #represent the sub title
+        option_surface = font.render('Press any key to start', True, red)
+        option_rect = option_surface.get_rect()
+        option_rect.midtop = (frame_size_x/2, frame_size_y/2+200)
+        game_window.blit(option_surface, option_rect)
+        #screen update
+        pygame.display.update()
+        fps_controller.tick(15)
+def game_loop():
+    global head_pos, snake_body, food_pos, food_spawn, fps_controller, direction, gameover, running, score
+    running=True
+    play_toonz(play_list)
+    while running:
+        #if the gameover flag is down
+        if not gameover:
+            #recognize all movement possibilities
+            if direction == "UP":
+                head_pos[1] -= square_size
+            elif direction == "DOWN":
+                head_pos[1] += square_size
+            elif direction == "LEFT":
+                head_pos[0] -= square_size
+            else:
+                head_pos[0] += square_size
+            #conditions that allows the no-walls condition in the game
+            if head_pos[0] < 0:
+                head_pos[0] = frame_size_x - square_size
+            elif head_pos[0] > frame_size_x - square_size:
+                head_pos[0] = 0
+            elif head_pos[1] < 0:
+                head_pos[1] = frame_size_y - square_size
+            elif head_pos[1] > frame_size_y - square_size:
+                head_pos[1] = 0
+            # eating apple
+            snake_body.insert(0, list(head_pos))
+            if head_pos[0] == food_pos[0] and head_pos[1] == food_pos[1]:
+                score += 1
+                food_spawn = False
+                play_sound(1)
+            else:
+                snake_body.pop()
+            # spawn food in a random place
+            if not food_spawn:
+                #note: the floor division // rounds the result down to the nearest whole number
+                food_pos = [random.randrange(1, (frame_size_x // square_size)) * square_size,
+                            random.randrange(1, (frame_size_y // square_size)) * square_size]
+                food_spawn = True
 
+            # food and snake screen draw
+            game_window.blit(bg, (0, 0))
+            for pos in snake_body:
+                pygame.draw.rect(game_window, snake_color, pygame.Rect(
+                    pos[0] + 2, pos[1] + 2, square_size - 2, square_size - 2))
+            pygame.draw.rect(game_window, food_color, pygame.Rect(
+                food_pos[0], food_pos[1], square_size, square_size))
+
+            # game over condiditons
+            for block in snake_body[1:]:
+                if head_pos[0] == block[0] and head_pos[1] == block[1]:
+                    gameover = True
+                    play_sound(0)
+                    mixer.music.stop()
+                    #play_background_music(0)
+            show_score(1, white, 'consolas', 30)
+        else:
+            show_score(0, red, 'Arial', 40)
+            option_surface = font.render(
+                'You lost! Press \'Q\' to quit, or Spacebar to play again', True, snake_color)
+            option_rect = option_surface.get_rect()
+            option_rect.midtop = (frame_size_x/2, frame_size_y/2+200)
+            game_window.blit(option_surface, option_rect)
+        pygame.display.update()
+        fps_controller.tick(speed)
+
+        # Event Loop
+        # Get the next events from the queue
+        # For each event returned from get(),
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if (event.key == pygame.K_UP or event.key == ord("w")
+                        and direction != "DOWN"):
+                    direction = "UP"
+                if (event.key == pygame.K_DOWN or event.key == ord("s")
+                        and direction != "UP"):
+                    direction = "DOWN"
+                if (event.key == pygame.K_LEFT or event.key == ord("a")
+                        and direction != "RIGHT"):
+                    direction = "LEFT"
+                if (event.key == pygame.K_RIGHT or event.key == ord("d")
+                        and direction != "LEFT"):
+                    direction = "RIGHT"
+                if (event.key == pygame.K_ESCAPE):
+                    mixer.music.pause()
+                    paused()
+                if gameover == True:
+                    if event.key == pygame.K_SPACE:
+                        init_vars()
+                    if event.key == pygame.K_q:
+                        pygame.quit()
+                        sys.exit()
 def game_over():
     game_window.fill(black)
     mixer.music.stop()
@@ -232,96 +324,7 @@ def game_over():
             fps_controller.tick(60)    
 #call the init_vars function
 init_vars()
-
 #game loop
-while running:
-    #if the gameover flag is down
-    if not gameover:
-        #recognize all movement possibilities
-        if direction == "UP":
-            head_pos[1] -= square_size
-        elif direction == "DOWN":
-            head_pos[1] += square_size
-        elif direction == "LEFT":
-            head_pos[0] -= square_size
-        else:
-            head_pos[0] += square_size
-        #conditions that allows the no-walls condition in the game
-        if head_pos[0] < 0:
-            head_pos[0] = frame_size_x - square_size
-        elif head_pos[0] > frame_size_x - square_size:
-            head_pos[0] = 0
-        elif head_pos[1] < 0:
-            head_pos[1] = frame_size_y - square_size
-        elif head_pos[1] > frame_size_y - square_size:
-            head_pos[1] = 0
-        # eating apple
-        snake_body.insert(0, list(head_pos))
-        if head_pos[0] == food_pos[0] and head_pos[1] == food_pos[1]:
-            score += 1
-            food_spawn = False
-            play_sound(1)
-        else:
-            snake_body.pop()
-        # spawn food in a random place
-        if not food_spawn:
-            #note: the floor division // rounds the result down to the nearest whole number
-            food_pos = [random.randrange(1, (frame_size_x // square_size)) * square_size,
-                        random.randrange(1, (frame_size_y // square_size)) * square_size]
-            food_spawn = True
 
-        # food and snake screen draw
-        game_window.blit(bg, (0, 0))
-        for pos in snake_body:
-            pygame.draw.rect(game_window, snake_color, pygame.Rect(
-                pos[0] + 2, pos[1] + 2, square_size - 2, square_size - 2))
-        pygame.draw.rect(game_window, food_color, pygame.Rect(
-            food_pos[0], food_pos[1], square_size, square_size))
-
-        # game over condiditons
-        for block in snake_body[1:]:
-            if head_pos[0] == block[0] and head_pos[1] == block[1]:
-                gameover = True
-                play_sound(0)
-                mixer.music.stop()
-                #play_background_music(0)
-        show_score(1, white, 'consolas', 30)
-    else:
-        show_score(0, red, 'Arial', 40)
-        option_surface = font.render(
-            'You lost! Press \'Q\' to quit, or Spacebar to play again', True, snake_color)
-        option_rect = option_surface.get_rect()
-        option_rect.midtop = (frame_size_x/2, frame_size_y/2+200)
-        game_window.blit(option_surface, option_rect)
-
-    pygame.display.update()
-    fps_controller.tick(speed)
-
-    # Event Loop
-    # Get the next events from the queue
-    # For each event returned from get(),
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        elif event.type == pygame.KEYDOWN:
-            if (event.key == pygame.K_UP or event.key == ord("w")
-                    and direction != "DOWN"):
-                direction = "UP"
-            if (event.key == pygame.K_DOWN or event.key == ord("s")
-                    and direction != "UP"):
-                direction = "DOWN"
-            if (event.key == pygame.K_LEFT or event.key == ord("a")
-                    and direction != "RIGHT"):
-                direction = "LEFT"
-            if (event.key == pygame.K_RIGHT or event.key == ord("d")
-                    and direction != "LEFT"):
-                direction = "RIGHT"
-            if (event.key == pygame.K_ESCAPE):
-                mixer.music.pause()
-                paused()
-            if gameover == True:
-                if event.key == pygame.K_SPACE:
-                    init_vars()
-                if event.key == pygame.K_q:
-                    running = False
+game_intro()
+game_loop()
