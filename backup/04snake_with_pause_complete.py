@@ -29,22 +29,41 @@ red = (255, 0, 0)
 font = pygame.font.SysFont('Arial', 40)
 white_image = pygame.image.load("white.png")
 black_image = pygame.image.load('black.png')
+
 # Text
 font_pause = pygame.font.Font("font.ttf", 70)
 resume_text = font_pause.render("resume", False, 'black')
 resume_alt_text = font_pause.render("resume", False, 'orange')
 exit_text = font_pause.render("exit", False, 'black')
 exit_alt_text = font_pause.render("exit", False, 'red')
+
 #background image
 bg = pygame.image.load("100.jpg")
+
+#a playlist with the bg musics
+play_list=[]
+play_list.append("resources/01.mp3")
+play_list.append("resources/02.mp3")
+play_list.append("resources/03.mp3")
+play_list.append("resources/04.mp3")
+songnum=1
+
+#function to randomize the reproduction of music
+def play_toonz(play_list):
+    random.shuffle(play_list)
+    pygame.mixer.music.load(play_list[songnum])
+    pygame.mixer.music.play(10)
+
+    for num, song in enumerate(play_list):
+        if num == songnum:
+            continue
+        pygame.mixer.music.queue(song)
 
 # one snake square size
 square_size = 30
 score = 0
 
 # a function that draw the score in the game window
-
-
 def show_score(choice, color, font, size):
     score_font = pygame.font.Font('Pcoleco.otf', 40)
     score_surface = score_font.render("Score: " + str(score), True, color)
@@ -56,23 +75,12 @@ def show_score(choice, color, font, size):
         game_over_surface = gameover_font.render('YOU DIED', True, red)
         game_over_rect = game_over_surface.get_rect()
         game_over_rect.midtop = (frame_size_x/2, frame_size_y/4)
-        game_window.fill(black)
+        game_window.fill(pause_bg)
         game_window.blit(game_over_surface, game_over_rect)
         score_rect.midtop = (frame_size_x/2, frame_size_y/1.25)
     game_window.blit(score_surface, score_rect)
 
-
-def play_background_music(music):
-    if music == 1:
-        mixer.init()
-        mixer.music.load('resources/music.mp3')
-        mixer.music.play(-1)
-    else:
-        mixer.init()
-        mixer.music.load("resources/gameover.wav")
-        mixer.music.play()
-
-
+#function that reproduces sound effects
 def play_sound(sound):
     point = mixer.Sound("resources/Point.wav")
     crash = mixer.Sound("resources/crash.wav")
@@ -81,7 +89,7 @@ def play_sound(sound):
     if sound == 1:
         mixer.Sound.play(point)
 
-
+#function to initialize the variables
 def init_vars():
     global head_pos, snake_body, food_pos, food_spawn, direction, running, gameover, fps_controller
     running = True
@@ -93,10 +101,9 @@ def init_vars():
                 random.randrange(1, (frame_size_y // square_size)) * square_size]
     food_spawn = True
     fps_controller = pygame.time.Clock()
+    play_toonz(play_list)
 
-    play_background_music(1)
-
-
+#define a interactive pause menu
 def paused():
     loop = 1
     # Transparent White Layer
@@ -104,7 +111,6 @@ def paused():
     white.set_colorkey('black')
     white.set_alpha(100)
     game_window.blit(white, (0, 0))
-
     while loop:
         if gameover == 0:  # fix the overlay into the gameover screen and pause
             mixer.music.pause()
@@ -120,12 +126,6 @@ def paused():
                 )-5, 5, resume_alt_text.get_width(), resume_alt_text.get_height())
                 game_window.blit(
                     resume_alt_text, (resume_rect.x, resume_rect.y))
-                # Resume Button Outline
-                # black = pygame.transform.scale(black_image,(resume_text.get_width(), resume_text.get_height()))
-                # black.set_colorkey('black')
-                # black.set_alpha(100)
-                # game_window.blit(black, (resume_rect.x, resume_rect.y))
-                # Resume Button Clicking Function
                 if pygame.mouse.get_pressed()[0] == 1 and clicked == False:
                     loop = 0
                     clicked = True
@@ -141,12 +141,6 @@ def paused():
                 exit_rect = pygame.Rect(frame_size_x-exit_alt_text.get_width(
                 )-5, resume_text.get_height()+10, exit_alt_text.get_width(), exit_alt_text.get_height())
                 game_window.blit(exit_alt_text, (exit_rect.x, exit_rect.y))
-                # Exit Button Outline
-                # black = pygame.transform.scale(black_image,(exit_text.get_width(), exit_text.get_height()))
-                # black.set_colorkey('black')
-                # black.set_alpha(100)
-                # game_window.blit(black, (exit_rect.x, exit_rect.y))
-                # Exit Button Clicking Funciton
                 if pygame.mouse.get_pressed()[0] == 1 and clicked == False:
                     clicked = True
                     pygame.quit()
@@ -160,16 +154,17 @@ def paused():
                     if event.key == pygame.K_ESCAPE:
                         loop = 0
                         mixer.music.unpause()
-
             pygame.display.update()
             fps_controller.tick(60)
 
-
+#call the init_vars function
 init_vars()
 
-# game loop
+#game loop
 while running:
+    #if the gameover flag is down
     if not gameover:
+        #recognize all movement possibilities
         if direction == "UP":
             head_pos[1] -= square_size
         elif direction == "DOWN":
@@ -178,7 +173,7 @@ while running:
             head_pos[0] -= square_size
         else:
             head_pos[0] += square_size
-
+        #conditions that allows the no-walls condition in the game
         if head_pos[0] < 0:
             head_pos[0] = frame_size_x - square_size
         elif head_pos[0] > frame_size_x - square_size:
@@ -187,7 +182,6 @@ while running:
             head_pos[1] = frame_size_y - square_size
         elif head_pos[1] > frame_size_y - square_size:
             head_pos[1] = 0
-
         # eating apple
         snake_body.insert(0, list(head_pos))
         if head_pos[0] == food_pos[0] and head_pos[1] == food_pos[1]:
@@ -196,9 +190,9 @@ while running:
             play_sound(1)
         else:
             snake_body.pop()
-
-        # spawn food
+        # spawn food in a random place
         if not food_spawn:
+            #note: the floor division // rounds the result down to the nearest whole number
             food_pos = [random.randrange(1, (frame_size_x // square_size)) * square_size,
                         random.randrange(1, (frame_size_y // square_size)) * square_size]
             food_spawn = True
@@ -217,7 +211,7 @@ while running:
                 gameover = True
                 play_sound(0)
                 mixer.music.stop()
-                play_background_music(0)
+                #play_background_music(0)
         show_score(1, white, 'consolas', 30)
     else:
         show_score(0, red, 'Arial', 40)
