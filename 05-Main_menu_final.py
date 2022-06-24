@@ -155,26 +155,26 @@ def paused():
 def game_intro():
     pygame
     intro = True
-    
     while intro:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
                     intro = False
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
         #represent the title in the middle
-        game_window.fill(white)
+        menu_image=pygame.image.load('menu.png')
+        game_window.blit(menu_image,(0,0))
         intro_font = pygame.font.Font('font.ttf', 90)
-        intro_surface = intro_font.render('Snake Game', True, red)
+        intro_txt_color=(64,23,23)
+        intro_surface = intro_font.render('Snake Game', True, intro_txt_color)
         intro_rect = intro_surface.get_rect()
-        intro_rect.midtop = (frame_size_x/2, frame_size_y/4)
+        intro_rect.midtop = (frame_size_x/2, frame_size_y/2+100)
         game_window.blit(intro_surface, intro_rect)
         #represent the sub title
-        option_surface = font.render('Press any key to start', True, red)
+        option_surface = font.render('Press any key to start', True, intro_txt_color)
         option_rect = option_surface.get_rect()
-        option_rect.midtop = (frame_size_x/2, frame_size_y/2+200)
+        option_rect.midtop = (frame_size_x/2, frame_size_y/2+250)
         game_window.blit(option_surface, option_rect)
         #screen update
         pygame.display.update()
@@ -279,39 +279,35 @@ def game_over():
     game_window.fill(black)
     mixer.music.stop()
     loop=1
-    white = pygame.transform.scale(white_image, (frame_size_x, frame_size_y))
-    white.set_colorkey('black')
-    white.set_alpha(100)
-    game_window.blit(white, (0, 0))
+    
     while loop:
         if gameover == 0:  # fix the overlay into the gameover screen and pause
             mixer.music.pause()
             clicked = False
             mouse_pos = pygame.mouse.get_pos()
             # Resume Button
-            retry_rect = pygame.Rect(frame_size_x-retry_text.get_width()-5, 5, retry_text.get_width(), retry_text.get_height())
+            retry_rect = pygame.Rect(frame_size_x/2, frame_size_y/2+100, retry_text.get_width(), retry_text.get_height())
             game_window.blit(retry_text, (frame_size_x/2, frame_size_y/2+100))
+            
             if retry_rect.collidepoint(mouse_pos):
                 # changing the color of the text
-                retry_rect = pygame.Rect(frame_size_x-retry_alt_text.get_width(
-                )-5, 5, retry_alt_text.get_width(), retry_alt_text.get_height())
-                game_window.blit(
-                    retry_alt_text, (frame_size_x/2, frame_size_y/2+100))
+                retry_rect = pygame.Rect(frame_size_x/2, frame_size_y/2+100, retry_text.get_width(), retry_text.get_height())
+                game_window.blit(retry_alt_text, (frame_size_x/2, frame_size_y/2+100))
                 if pygame.mouse.get_pressed()[0] == 1 and clicked == False:
                     loop = 0
                     clicked = True
                     mixer.music.unpause()
             if pygame.mouse.get_pressed()[0] == 0:
                 clicked = False
+            
             # Exit Button
-            exit_rect = pygame.Rect(frame_size_x-exit_text.get_width(
-            )-5, resume_text.get_height()+10, exit_text.get_width(), exit_text.get_height())
+            exit_rect = pygame.Rect(frame_size_x/2, frame_size_y/2, exit_text.get_width(), exit_text.get_height())
             game_window.blit(exit_text, (frame_size_x/2, frame_size_y+200))
             # Exit Button Clicking Function
             if exit_rect.collidepoint(mouse_pos):
-                exit_rect = pygame.Rect(frame_size_x-exit_alt_text.get_width(
-                )-5, resume_text.get_height()+10, exit_alt_text.get_width(), exit_alt_text.get_height())
+                exit_rect = pygame.Rect(frame_size_x/2, frame_size_y/2, exit_text.get_width(), exit_text.get_height())
                 game_window.blit(exit_alt_text, (frame_size_x/2, frame_size_y+200))
+                
                 if pygame.mouse.get_pressed()[0] == 1 and clicked == False:
                     clicked = True
                     pygame.quit()
@@ -321,6 +317,7 @@ def game_over():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     loop = 0
+            
             pygame.display.update()
             fps_controller.tick(60)    
 #call the init_vars function
