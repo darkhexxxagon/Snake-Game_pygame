@@ -151,11 +151,11 @@ def paused():
                         mixer.music.unpause()
             pygame.display.update()
             fps_controller.tick(60)
-def text_objects(text, font):
-    textSurface = font.render(text, True, black)
-    return textSurface, textSurface.get_rect()
+
 def game_intro():
+    pygame
     intro = True
+    
     while intro:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -181,8 +181,8 @@ def game_intro():
         fps_controller.tick(15)
 def game_loop():
     global head_pos, snake_body, food_pos, food_spawn, fps_controller, direction, gameover, running, score
-    running=True
     play_toonz(play_list)
+    running=True
     while running:
         #if the gameover flag is down
         if not gameover:
@@ -271,6 +271,7 @@ def game_loop():
                 if gameover == True:
                     if event.key == pygame.K_SPACE:
                         init_vars()
+                        play_toonz(play_list)
                     if event.key == pygame.K_q:
                         pygame.quit()
                         sys.exit()
@@ -325,6 +326,5 @@ def game_over():
 #call the init_vars function
 init_vars()
 #game loop
-
 game_intro()
 game_loop()
