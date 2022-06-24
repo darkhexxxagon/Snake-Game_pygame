@@ -152,6 +152,7 @@ def paused():
             pygame.display.update()
             fps_controller.tick(60)
 
+#define the principal parts of the game
 def game_intro():
     pygame
     intro = True
@@ -166,7 +167,7 @@ def game_intro():
         menu_image=pygame.image.load('menu.png')
         game_window.blit(menu_image,(0,0))
         intro_font = pygame.font.Font('font.ttf', 90)
-        intro_txt_color=(64,23,23)
+        intro_txt_color=(255,220,100)
         intro_surface = intro_font.render('Snake Game', True, intro_txt_color)
         intro_rect = intro_surface.get_rect()
         intro_rect.midtop = (frame_size_x/2, frame_size_y/2+100)
@@ -275,51 +276,6 @@ def game_loop():
                     if event.key == pygame.K_q:
                         pygame.quit()
                         sys.exit()
-def game_over():
-    game_window.fill(black)
-    mixer.music.stop()
-    loop=1
-    
-    while loop:
-        if gameover == 0:  # fix the overlay into the gameover screen and pause
-            mixer.music.pause()
-            clicked = False
-            mouse_pos = pygame.mouse.get_pos()
-            # Resume Button
-            retry_rect = pygame.Rect(frame_size_x/2, frame_size_y/2+100, retry_text.get_width(), retry_text.get_height())
-            game_window.blit(retry_text, (frame_size_x/2, frame_size_y/2+100))
-            
-            if retry_rect.collidepoint(mouse_pos):
-                # changing the color of the text
-                retry_rect = pygame.Rect(frame_size_x/2, frame_size_y/2+100, retry_text.get_width(), retry_text.get_height())
-                game_window.blit(retry_alt_text, (frame_size_x/2, frame_size_y/2+100))
-                if pygame.mouse.get_pressed()[0] == 1 and clicked == False:
-                    loop = 0
-                    clicked = True
-                    mixer.music.unpause()
-            if pygame.mouse.get_pressed()[0] == 0:
-                clicked = False
-            
-            # Exit Button
-            exit_rect = pygame.Rect(frame_size_x/2, frame_size_y/2, exit_text.get_width(), exit_text.get_height())
-            game_window.blit(exit_text, (frame_size_x/2, frame_size_y+200))
-            # Exit Button Clicking Function
-            if exit_rect.collidepoint(mouse_pos):
-                exit_rect = pygame.Rect(frame_size_x/2, frame_size_y/2, exit_text.get_width(), exit_text.get_height())
-                game_window.blit(exit_alt_text, (frame_size_x/2, frame_size_y+200))
-                
-                if pygame.mouse.get_pressed()[0] == 1 and clicked == False:
-                    clicked = True
-                    pygame.quit()
-                    sys.exit()
-            if pygame.mouse.get_pressed()[0] == 0:
-                clicked = False
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    loop = 0
-            
-            pygame.display.update()
-            fps_controller.tick(60)    
 #call the init_vars function
 init_vars()
 #game loop
