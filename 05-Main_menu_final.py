@@ -33,17 +33,15 @@ black_image = pygame.image.load('black.png')
 font_pause = pygame.font.Font("font.ttf", 70)
 resume_text = font_pause.render("resume", False, 'black')
 resume_alt_text = font_pause.render("resume", False, 'orange')
-retry_text = font_pause.render("retry", False, 'black')
-retry_alt_text = font_pause.render("retry", False, 'green')
-
 exit_text = font_pause.render("exit", False, 'black')
 exit_alt_text = font_pause.render("exit", False, 'red')
+#background image
+bg = pygame.image.load("100.jpg")
+fps_controller = pygame.time.Clock()
 
 # one snake square size
 square_size = 30
-score = 0
-#background image
-bg = pygame.image.load("100.jpg")
+score = 0   
 
 play_list=[]
 play_list.append("resources/01.mp3")
@@ -51,6 +49,7 @@ play_list.append("resources/02.mp3")
 play_list.append("resources/03.mp3")
 play_list.append("resources/04.mp3")
 songnum=1
+
 def play_toonz(play_list):
     random.shuffle(play_list)
     pygame.mixer.music.load(play_list[songnum])
@@ -96,7 +95,6 @@ def init_vars():
     food_pos = [random.randrange(1, (frame_size_x // square_size)) * square_size,
                 random.randrange(1, (frame_size_y // square_size)) * square_size]
     food_spawn = True
-    fps_controller = pygame.time.Clock()
 
 #define a interactive pause menu
 def paused():
@@ -115,33 +113,42 @@ def paused():
             resume_rect = pygame.Rect(
                 frame_size_x-resume_text.get_width()-5, 5, resume_text.get_width(), resume_text.get_height())
             game_window.blit(resume_text, (resume_rect.x, resume_rect.y))
+            
             if resume_rect.collidepoint(mouse_pos):
                 # changing the color of the text
                 resume_rect = pygame.Rect(frame_size_x-resume_alt_text.get_width(
                 )-5, 5, resume_alt_text.get_width(), resume_alt_text.get_height())
-                game_window.blit(
-                    resume_alt_text, (resume_rect.x, resume_rect.y))
+                game_window.blit(resume_alt_text, (resume_rect.x, resume_rect.y))
+                
                 if pygame.mouse.get_pressed()[0] == 1 and clicked == False:
                     loop = 0
                     clicked = True
                     mixer.music.unpause()
+
             if pygame.mouse.get_pressed()[0] == 0:
                 clicked = False
+                
             # Exit Button
             exit_rect = pygame.Rect(frame_size_x-exit_text.get_width(
             )-5, resume_text.get_height()+10, exit_text.get_width(), exit_text.get_height())
+            
             game_window.blit(exit_text, (exit_rect.x, exit_rect.y))
+            
             # Exit Button Clicking Function
             if exit_rect.collidepoint(mouse_pos):
                 exit_rect = pygame.Rect(frame_size_x-exit_alt_text.get_width(
                 )-5, resume_text.get_height()+10, exit_alt_text.get_width(), exit_alt_text.get_height())
+                
                 game_window.blit(exit_alt_text, (exit_rect.x, exit_rect.y))
+                
                 if pygame.mouse.get_pressed()[0] == 1 and clicked == False:
                     clicked = True
                     pygame.quit()
                     sys.exit()
+                    
             if pygame.mouse.get_pressed()[0] == 0:
                 clicked = False
+                
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     loop = 0
