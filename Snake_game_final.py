@@ -37,28 +37,31 @@ resume_alt_text = font_pause.render("resume", False, 'orange')
 exit_text = font_pause.render("exit", False, 'black')
 exit_alt_text = font_pause.render("exit", False, 'red')
 
-#background image
-bg = pygame.image.load("100.jpg")
+#background image, if is needed can change with other image whith name 'bg.png'
+bg = pygame.image.load("bg.png")
+# bg = pygame.image.load("100.jpg")
+
 fps_controller = pygame.time.Clock()
 
 # one snake square size
 square_size = 30
-score = 0   
-play_list=[]
-play_list.append("resources/01.mp3")
-play_list.append("resources/02.mp3")
-play_list.append("resources/03.mp3")
-play_list.append("resources/04.mp3")
-songnum=1
+score = 0 
+#Playlist, can modify to add the music that you need
+# play_list=[]
+# play_list.append("resources/01.mp3")
+# play_list.append("resources/02.mp3")
+# play_list.append("resources/03.mp3")
+# play_list.append("resources/04.mp3")
+# songnum=1
 
-def play_toonz(play_list):
-    random.shuffle(play_list)
-    pygame.mixer.music.load(play_list[songnum])
-    pygame.mixer.music.play(10)
-    for num, song in enumerate(play_list):
-        if num == songnum:
-            continue
-        pygame.mixer.music.queue(song)
+# def play_toonz(play_list):
+#     random.shuffle(play_list)
+#     pygame.mixer.music.load(play_list[songnum])
+#     pygame.mixer.music.play(10)
+#     for num, song in enumerate(play_list):
+#         if num == songnum:
+#             continue
+#         pygame.mixer.music.queue(song)
 # a function that draw the score in the game window
 
 def show_score(choice, color, font, size):
@@ -190,7 +193,7 @@ def game_intro():
         fps_controller.tick(15)
 def game_loop():
     global head_pos, snake_body, food_pos, food_spawn, fps_controller, direction, gameover, running, score
-    play_toonz(play_list)
+    # play_toonz(play_list)
     running=True
     while running:
         #if the gameover flag is down
@@ -280,7 +283,7 @@ def game_loop():
                 if gameover == True:
                     if event.key == pygame.K_SPACE:
                         init_vars()
-                        play_toonz(play_list)
+                        # play_toonz(play_list)
                     if event.key == pygame.K_q:
                         pygame.quit()
                         sys.exit()
